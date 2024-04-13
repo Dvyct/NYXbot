@@ -10,7 +10,7 @@ _G.StickyAimEnabled = false
 
 -- Function to check if a player is on the same team
 local function isPlayerOnSameTeam(player)
-	if player and player.Team then
+	if player and player.Team and localPlayer.Team then
 		return player.Team == localPlayer.Team
 	end
 	return false
@@ -25,7 +25,7 @@ local function findNearestPlayer()
 
 	for _, player in ipairs(game.Players:GetPlayers()) do
 		if player ~= localPlayer and player.Character and player.Character:FindFirstChild(_G.AimbotPart) then
-			-- Check if the player is not on the same team
+			-- Check if the player is not on the same team and is not the local player
 			if not isPlayerOnSameTeam(player) then
 				local character = player.Character
 				local targetPart = character[_G.AimbotPart]
@@ -58,15 +58,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 		if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild(_G.AimbotPart) then
 			if _G.AimbotEnabled == true then
 				local targetPart = targetPlayer.Character[_G.AimbotPart]
-
-				-- Calculate the screen position of the target part
-				local targetScreenPos, onScreen = camera:WorldToScreenPoint(targetPart.Position)
-
-				if onScreen then
-					-- Update the mouse position to aim at the target
-					UIS.MouseBehavior = Enum.MouseBehavior.LockCenter
-					UIS:SetMouseLocation(targetScreenPos.X, targetScreenPos.Y)
-				end
+				camera.CFrame = CFrame.new(camera.CFrame.Position, targetPart.Position)
 
 				if _G.StickyAimEnabled then
 					currentTarget = targetPlayer
@@ -89,7 +81,6 @@ end)
 UIS.InputEnded:Connect(function(input, processed)
 	if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == _G.AimbotKey and not processed then
 		aim = false
-		UIS.MouseBehavior = Enum.MouseBehavior.Default
 		currentTarget = nil  -- Reset the current target when aim key is released
 	end
 end)
