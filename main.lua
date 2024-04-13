@@ -1,3 +1,46 @@
+-- Gui to Lua
+-- Version: 3.2
+
+-- Instances:
+
+local ScreenGui = Instance.new("ScreenGui")
+local ImageLabel = Instance.new("ImageLabel")
+
+--Properties:
+
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+ImageLabel.Parent = ScreenGui
+ImageLabel.AnchorPoint = Vector2.new(0.5, 1)
+ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ImageLabel.BackgroundTransparency = 1.000
+ImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ImageLabel.BorderSizePixel = 0
+ImageLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+ImageLabel.Size = UDim2.new(0, 110, 0, 110)
+ImageLabel.Image = "http://www.roblox.com/asset/?id=12201347372"
+
+-- Scripts:
+
+local function JORTBV_fake_script() -- ImageLabel.LocalScript 
+	local script = Instance.new('LocalScript', ImageLabel)
+
+	local UIS = game:GetService("UserInputService")
+	
+	-- Function to update the position of script.parent to the mouse position
+	local function updatePositionToMouse()
+		local Mouse = UIS:GetMouseLocation()
+		script.Parent.Position = UDim2.new(0, Mouse.X, 0, Mouse.Y)
+	end
+	
+	-- Connect a RenderStepped event to continuously update the position
+	game:GetService("RunService").RenderStepped:Connect(updatePositionToMouse)
+	
+end
+coroutine.wrap(JORTBV_fake_script)()
+
+
 local localPlayer = game.Players.LocalPlayer
 local camera = game.Workspace.CurrentCamera
 local UIS = game:GetService("UserInputService")
