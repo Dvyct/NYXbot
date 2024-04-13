@@ -1,27 +1,3 @@
--- Gui to Lua
--- Version: 3.2
-
--- Instances:
-
-local CircleFOV = Instance.new("ScreenGui")
-local ImageLabel = Instance.new("ImageLabel")
-
---Properties:
-
-CircleFOV.Name = "CircleFOV"
-CircleFOV.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-CircleFOV.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
-ImageLabel.Parent = CircleFOV
-ImageLabel.AnchorPoint = Vector2.new(0.5, 0.5)
-ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-ImageLabel.BackgroundTransparency = 1.000
-ImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-ImageLabel.BorderSizePixel = 0
-ImageLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
-ImageLabel.Size = UDim2.new(0, 110, 0, 110)
-ImageLabel.Image = "http://www.roblox.com/asset/?id=12201347372"
-
 local localPlayer = game.Players.LocalPlayer
 local camera = game.Workspace.CurrentCamera
 local UIS = game:GetService("UserInputService")
@@ -32,6 +8,9 @@ _G.AimbotEnabled = false
 _G.AimbotPart = "Head"  -- Default aimbot part
 _G.StickyAimEnabled = true
 _G.MaxAimDistance = 100  -- Maximum offset distance in pixels
+
+-- Interpolation settings
+local InterpolationSpeed = 10  -- Adjust this value to control the speed of camera movement
 
 -- Function to check if a player is on the same team
 local function isPlayerOnSameTeam(player)
@@ -79,14 +58,18 @@ local function findNearestPlayer()
     return closestPlayer
 end
 
-game:GetService("RunService").RenderStepped:Connect(function()
+game:GetService("RunService").RenderStepped:Connect(function(deltaTime)
     if aim then
         local targetPlayer = currentTarget or findNearestPlayer()
 
         if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild(_G.AimbotPart) then
             if _G.AimbotEnabled == true then
                 local targetPart = targetPlayer.Character[_G.AimbotPart]
-                camera.CFrame = CFrame.new(camera.CFrame.Position, targetPart.Position)
+                local targetPosition = targetPart.Position
+
+                -- Calculate the new camera CFrame direction with interpolation
+                local newCameraCFrame = camera.CFrame:lerp(CFrame.new(camera.CFrame.Position, targetPosition), InterpolationSpeed * deltaTime)
+                camera.CFrame = newCameraCFrame
 
                 if _G.StickyAimEnabled then
                     currentTarget = targetPlayer
