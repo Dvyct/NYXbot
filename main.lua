@@ -1,6 +1,7 @@
 local localPlayer = game.Players.LocalPlayer
 local camera = game.Workspace.CurrentCamera
 local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 
 -- Aimbot settings
 _G.AimbotKey = Enum.KeyCode.E
@@ -51,7 +52,7 @@ local function findNearestPlayer()
 	return closestPlayer
 end
 
-game:GetService("RunService").RenderStepped:Connect(function()
+RunService.RenderStepped:Connect(function()
 	if aim then
 		local targetPlayer = currentTarget or findNearestPlayer()
 
@@ -59,14 +60,12 @@ game:GetService("RunService").RenderStepped:Connect(function()
 			if _G.AimbotEnabled == true then
 				local targetPart = targetPlayer.Character[_G.AimbotPart]
 
-				-- Calculate the screen position of the target part
-				local targetScreenPos, onScreen = camera:WorldToScreenPoint(targetPart.Position)
+				-- Calculate the new camera CFrame to aim at the target
+				local targetPosition = targetPart.Position
+				local cameraPosition = camera.CFrame.Position
+				local aimDirection = (targetPosition - cameraPosition).unit
 
-				if onScreen then
-					-- Update the mouse position to aim at the target
-					UIS.MouseBehavior = Enum.MouseBehavior.LockCenter
-					UIS:SetMouseLocation(targetScreenPos.X, targetScreenPos.Y)
-				end
+				camera.CFrame = CFrame.new(cameraPosition, cameraPosition + aimDirection)
 
 				if _G.StickyAimEnabled then
 					currentTarget = targetPlayer
@@ -89,7 +88,6 @@ end)
 UIS.InputEnded:Connect(function(input, processed)
 	if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == _G.AimbotKey and not processed then
 		aim = false
-		UIS.MouseBehavior = Enum.MouseBehavior.Default
 		currentTarget = nil  -- Reset the current target when aim key is released
 	end
 end)
