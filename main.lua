@@ -69,6 +69,7 @@ RunService.RenderStepped:Connect(function()
                 -- Interpolate the camera CFrame towards the target
                 local newCFrame = CFrame.new(cameraPosition, cameraPosition + aimDirection)
                 camera.CFrame = camera.CFrame:Lerp(newCFrame, _G.AimbotSensitivity)
+                camera.CFrame = camera.CFrame:Lerp(newCFrame, _G.AimbotSensitivity)
 
                 if _G.StickyAimEnabled then
                     currentTarget = targetPlayer
