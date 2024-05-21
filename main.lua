@@ -9,6 +9,7 @@ _G.AimbotEnabled = false
 _G.AimbotPart = "Head"  -- Default aimbot part
 _G.StickyAimEnabled = false
 _G.AimbotSensitivity = 0.1 -- Adjust sensitivity (0 to 1)
+_G.TeamCheck = false
 
 -- Function to check if a player is on the same team
 local function isPlayerOnSameTeam(player)
@@ -27,8 +28,8 @@ local function findNearestPlayer()
 
     for _, player in ipairs(game.Players:GetPlayers()) do
         if player ~= localPlayer and player.Character and player.Character:FindFirstChild(_G.AimbotPart) then
-            -- Check if the player is not on the same team
-            if not isPlayerOnSameTeam(player) then
+            -- Check if the player is not on the same team if TeamCheck is enabled
+            if not _G.TeamCheck or ( _G.TeamCheck and not isPlayerOnSameTeam(player) ) then
                 local character = player.Character
                 local targetPart = character[_G.AimbotPart]
 
@@ -68,7 +69,6 @@ RunService.RenderStepped:Connect(function()
 
                 -- Interpolate the camera CFrame towards the target
                 local newCFrame = CFrame.new(cameraPosition, cameraPosition + aimDirection)
-                camera.CFrame = camera.CFrame:Lerp(newCFrame, _G.AimbotSensitivity)
                 camera.CFrame = camera.CFrame:Lerp(newCFrame, _G.AimbotSensitivity)
 
                 if _G.StickyAimEnabled then
