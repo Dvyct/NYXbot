@@ -7,9 +7,9 @@ local Camera = workspace.CurrentCamera
 -- Aimbot settings
 _G.AimbotKey = Enum.KeyCode.E
 _G.AimbotEnabled = false
-_G.AimbotPart = "Head"  -- Default aimbot part
+_G.AimbotPart = "Head"  -- custom
 _G.StickyAimEnabled = false
-_G.AimbotSensitivity = 100
+_G.AimbotSensitivity = 1 -- 0 to 1
 _G.TeamCheck = false
 
 -- Aimbot FOV Circle
@@ -19,10 +19,8 @@ FOV.Color = Color3.new(1, 0, 0)
 FOV.Thickness = 1
 FOV.Transparency = 1
 FOV.Filled = false
-FOV.Radius = 50  -- Default FOV radius
-FOV.Position = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
-
--- Function to check if a player is on the same team
+FOV.Radius = 250  -- Default FOV radius
+FOV.Position = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2) 
 local function isPlayerOnSameTeam(player)
     if player and player.Team then
         return player.Team == localPlayer.Team
@@ -53,7 +51,7 @@ local function findNearestPlayer()
                     local distance = (Vector2.new(mousePos.X, mousePos.Y) - Vector2.new(targetScreenPos.X, targetScreenPos.Y)).Magnitude
 
                     -- Update the closest player if this player is closer and within the Aimbot FOV
-                    if distance < closestDistance and distance <= FOV.Radius then
+                    if distance < closestDistance and distance <= FOV.Radius * 1.2 then
                         closestPlayer = player
                         closestDistance = distance
                     end
@@ -82,7 +80,7 @@ RunService.RenderStepped:Connect(function()
 
                 -- Interpolate the camera CFrame towards the target
                 local newCFrame = CFrame.new(cameraPosition, cameraPosition + aimDirection)
-                camera.CFrame = camera.CFrame:Lerp(newCFrame, _G.AimbotSensitivity / 100)
+                camera.CFrame = camera.CFrame:Lerp(newCFrame, _G.AimbotSensitivity)
 
                 if _G.StickyAimEnabled then
                     currentTarget = targetPlayer
