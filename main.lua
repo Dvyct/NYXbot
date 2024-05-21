@@ -56,9 +56,6 @@ local function findNearestPlayer()
                     -- Calculate the distance from the mouse position to the target part
                     local mousePos = UIS:GetMouseLocation()
                     local distance = (Vector2.new(mousePos.X, mousePos.Y) - Vector2.new(targetScreenPos.X, targetScreenPos.Y)).Magnitude
-FOV.Visible = _G.FovCircleVisible
-AimedLine.Visible = _G.AimedLineVisible
-FOV.Radius = _G.FovCircleRadius
                     -- Update the closest player if this player is closer and within the Aimbot FOV
                     if distance < closestDistance and distance <= FOV.Radius * 1.2 then
                         closestPlayer = player
@@ -75,7 +72,9 @@ end
 RunService.RenderStepped:Connect(function()
     FOV.Position = UIS:GetMouseLocation()
     AimedLine.From = FOV.Position
-    
+    FOV.Visible = _G.FovCircleVisible
+    AimedLine.Visible = _G.AimedLineVisible
+    FOV.Radius = _G.FovCircleRadius
     if aim then
         local targetPlayer = currentTarget or findNearestPlayer()
 
