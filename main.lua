@@ -13,7 +13,9 @@ _G.AimbotSensitivity = 1 -- 0 to 1
 _G.TeamCheck = true
 _G.FovCircleVisible = true
 _G.FovCircleRadius = 250
-_G.AimedLineVisible = true
+_G.AimedLineVisible = false
+_G.BulletSpeed = 820-- chat gpt calculated
+
 -- Aimbot FOV Circle
 local FOV = Drawing.new("Circle")
 FOV.Color = Color3.new(0, 0, 0)
@@ -69,6 +71,15 @@ local function findNearestPlayer()
     return closestPlayer
 end
 
+local function getPredictedPosition(targetPart, bulletSpeed)
+    local targetVelocity = targetPart.Velocity
+    local targetPosition = targetPart.Position
+    local distance = (targetPosition - camera.CFrame.Position).Magnitude
+    local timeToHit = distance / bulletSpeed
+    local predictedPosition = targetPosition + (targetVelocity * timeToHit)
+    return predictedPosition
+end
+
 RunService.RenderStepped:Connect(function()
     FOV.Position = UIS:GetMouseLocation()
     AimedLine.From = FOV.Position
@@ -83,18 +94,18 @@ RunService.RenderStepped:Connect(function()
                 local targetPart = targetPlayer.Character[_G.AimbotPart]
 
                 -- Calculate the new camera CFrame to aim at the target
-                local targetPosition = targetPart.Position
+                local predictedPosition = getPredictedPosition(targetPart, _G.BulletSpeed)
                 local cameraPosition = camera.CFrame.Position
-                local aimDirection = (targetPosition - cameraPosition).unit
+                local aimDirection = (predictedPosition - cameraPosition).unit
 
                 -- Interpolate the camera CFrame towards the target
                 local newCFrame = CFrame.new(cameraPosition, cameraPosition + aimDirection)
                 camera.CFrame = camera.CFrame:Lerp(newCFrame, _G.AimbotSensitivity)
 
-                -- Update the aimed line to point to the target part
-                local targetScreenPos, onScreen = camera:WorldToScreenPoint(targetPart.Position)
+                -- Update the aimed line to point to the predicted position
+                local predictedScreenPos, onScreen = camera:WorldToScreenPoint(predictedPosition)
                 if onScreen then
-                    AimedLine.To = Vector2.new(targetScreenPos.X, targetScreenPos.Y) 
+                    AimedLine.To = Vector2.new(predictedScreenPos.X, predictedScreenPos.Y) 
                 else
                     AimedLine.To = AimedLine.From
                 end
